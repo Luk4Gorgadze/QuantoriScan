@@ -33,8 +33,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Debug Secrets Availability
+        run: |
+          if [ -n "${{ secrets.POSTGRES_USER }}" ]; then
+            echo "POSTGRES_USER is set"
+          else
+            echo "POSTGRES_USER is not set"
+          fi
+          if [ -n "${{ secrets.POSTGRES_PASSWORD }}" ]; then
+            echo "POSTGRES_PASSWORD is set"
+          else
+            echo "POSTGRES_PASSWORD is not set"
+          fi
+          if [ -n "${{ secrets.POSTGRES_DB }}" ]; then
+            echo "POSTGRES_DB is set"
+          else
+            echo "POSTGRES_DB is not set"
+          fi
+
+      - name: Create and verify .env file
+        run: |
+          # Create .env file
+          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" > .env
+          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
+          echo "DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}" >> .env
+
+          # Verify .env file exists and has content (without showing sensitive data)
+          echo "Checking .env file:"
+          if [ -f .env ]; then
+            echo ".env file exists"
+            echo "Number of lines in .env: $(wc -l < .env)"
+          else
+            echo ".env file does not exist"
+          fi
+
+          # Show current directory contents
+          echo "Directory contents:"
+          ls -la
+
       - name: Build and run Docker Compose services
         run: |
+          # Verify .env file location and content before docker-compose
+          pwd
+          echo "Current directory contents:"
+          ls -la
+          echo "Docker Compose command about to run..."
           docker-compose -f docker-compose.yml up --build -d
 
       - name: Install dependencies for linting
@@ -44,15 +88,18 @@ jobs:
 
       - name: Lint with flake8
         run: |
-          # stop the build if there are Python syntax errors or undefined names
           flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 app --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Wait for services to be ready
+        run: |
+          timeout 30s bash -c 'until docker-compose exec -T db pg_isready -U ${{ secrets.POSTGRES_USER }}; do sleep 1; done'
 
       - name: Run tests inside Docker container
         run: |
           docker-compose exec -T web pytest tests
 
       - name: Stop and remove Docker Compose services
+        if: always()
         run: |
           docker-compose down
