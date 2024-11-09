@@ -23,6 +23,6 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-# Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 db_dependency = Annotated[Session, Depends(get_db)]
