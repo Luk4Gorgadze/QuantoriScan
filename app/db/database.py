@@ -1,11 +1,12 @@
 import os
-from typing import Generator
+from typing import Annotated, Generator
 
+from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, sessionmaker
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL", "")
 
 engine = create_engine(DATABASE_URL)
 
@@ -20,3 +21,8 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
+
+# Base.metadata.create_all(bind=engine)
+
+db_dependency = Annotated[Session, Depends(get_db)]

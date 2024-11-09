@@ -6,6 +6,18 @@ from pydantic import BaseModel, ConfigDict
 from app.db.enums import FileStatus, FileType
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class FileSerializer(BaseModel):
     id: int
     title: str

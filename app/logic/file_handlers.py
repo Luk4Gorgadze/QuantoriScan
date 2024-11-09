@@ -5,8 +5,8 @@ from typing import Tuple
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.db.schemas import FileType, FileStatus
 from app.db.models import File
+from app.db.schemas import FileStatus, FileType
 
 
 def handle_csv(file_contents: bytes, db: Session, file_name: str, file_size: int, user_id: int) -> bool:

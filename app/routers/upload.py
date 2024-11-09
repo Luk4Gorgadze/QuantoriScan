@@ -1,22 +1,16 @@
-from typing import Annotated
-
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
 from app import auth
-from app.auth import get_current_user
 from app.celery_worker import celery
-from app.db.database import get_db
+from app.db.database import db_dependency
 from app.tasks import handle_csv_task, handle_text_task
 
 router = APIRouter()
 
-db_dependency = Annotated[Session, Depends(get_db)]
 
-
-@router.post("/upload/", status_code=status.HTTP_202_ACCEPTED)
+@router.post("/", status_code=status.HTTP_202_ACCEPTED)
 async def upload_file(
-    user: Annotated[auth.User, Depends(get_current_user)],
+    user: auth.user_dependency,
     db: db_dependency,
     file: UploadFile = File(...)
 ) -> dict:

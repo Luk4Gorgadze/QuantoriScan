@@ -23,7 +23,7 @@ if config.config_file_name is not None:
 
 config.set_main_option(
     "sqlalchemy.url",
-    f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@localhost:5432/{os.getenv('POSTGRES_DB')}"
+    f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}@db:5432/{os.getenv('POSTGRES_DB')}"
 )
 
 # add your model's MetaData object here

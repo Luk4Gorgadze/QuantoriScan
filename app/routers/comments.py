@@ -1,24 +1,20 @@
-from typing import Annotated, List
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, status
 
 import app.db.models as models
 from app import auth
-from app.auth import get_current_user
-from app.db.database import get_db
+from app.db.database import db_dependency
 from app.db.schemas import CommentCreate, CommentSerializer
 
 router = APIRouter()
 
-db_dependency = Annotated[Session, Depends(get_db)]
 
-
-@router.post("/files/{file_id}/comments", status_code=status.HTTP_201_CREATED)
+@router.post("/files/{file_id}", status_code=status.HTTP_201_CREATED)
 async def add_comment(
     file_id: int,
     comment_data: CommentCreate,
-    user: Annotated[auth.User, Depends(get_current_user)],
+    user: auth.user_dependency,
     db: db_dependency
 ) -> dict:
     file = db.query(models.File).filter(models.File.id == file_id).first()
@@ -38,10 +34,10 @@ async def add_comment(
     return {"message": "Comment added successfully", "comment_id": new_comment.id}
 
 
-@router.get("/files/{file_id}/comments", response_model=List[CommentSerializer], status_code=status.HTTP_200_OK)
+@router.get("/files/{file_id}", response_model=List[CommentSerializer], status_code=status.HTTP_200_OK)
 async def get_comments_for_file(
     file_id: int,
-    user: Annotated[auth.User, Depends(get_current_user)],
+    user: auth.user_dependency,
     db: db_dependency
 ) -> List[CommentSerializer]:
     file = db.query(models.File).filter(models.File.id == file_id).first()

@@ -1,23 +1,19 @@
-from typing import Annotated, List
+from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException, status
 
 import app.db.models as models
 from app import auth
-from app.auth import get_current_user
-from app.db.database import get_db
+from app.db.database import db_dependency
 from app.db.schemas import FileSerializer
 
 router = APIRouter()
 
-db_dependency = Annotated[Session, Depends(get_db)]
 
-
-@router.get("/users/{email}/files", response_model=List[FileSerializer], status_code=status.HTTP_200_OK)
+@router.get("/users/{email}", response_model=List[FileSerializer], status_code=status.HTTP_200_OK)
 async def get_files_by_user_email(
     email: str,
-    user: Annotated[auth.User, Depends(get_current_user)],
+    user: auth.user_dependency,
     db: db_dependency
 ) -> List[FileSerializer]:
     user = db.query(models.User).filter(models.User.email == email).first()
