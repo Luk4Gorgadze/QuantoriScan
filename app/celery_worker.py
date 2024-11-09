@@ -1,4 +1,4 @@
-from celery import Celery
+from celery import Celery  # tpye: ignore
 
 celery = Celery(
     'app.celery_worker',

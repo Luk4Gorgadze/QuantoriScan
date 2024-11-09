@@ -1,14 +1,13 @@
+import os
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
+from dotenv import load_dotenv
+from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 from alembic import context
-from app.db.models import *
 from app.db.database import Base
-from dotenv import load_dotenv
-
-import os
+from app.db.models import Comment, File, User
 
 load_dotenv()
 
@@ -30,7 +29,7 @@ config.set_main_option(
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

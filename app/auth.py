@@ -60,7 +60,7 @@ async def login_for_access_token(db: db_dependency,  email: EmailStr = Form(...)
 
 
 def authenticate_user(username_email: str, password: str, db: Session):
-    user = db.query(User).filter(User.email == username_email).first()
+    user = db.query(User).filter(User.email == username_email).first()  # type: ignore
     if not user:
         return False
     if not bcrypt_context.verify(password, user.password):

@@ -16,9 +16,9 @@ async def get_files_by_user_email(
     user: auth.user_dependency,
     db: db_dependency
 ) -> List[FileSerializer]:
-    user = db.query(models.User).filter(models.User.email == email).first()
+    user = db.query(models.User).filter(models.User.email == email).first()  # type: ignore
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    files = db.query(models.File).filter(models.File.user_id == user.id).all()
+    files = db.query(models.File).filter(models.File.user_id == user.id).all()  # type: ignore
     return [FileSerializer.model_validate(file) for file in files]

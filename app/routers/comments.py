@@ -17,7 +17,7 @@ async def add_comment(
     user: auth.user_dependency,
     db: db_dependency
 ) -> dict:
-    file = db.query(models.File).filter(models.File.id == file_id).first()
+    file = db.query(models.File).filter(models.File.id == file_id).first()  # type: ignore
     if not file:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
 
@@ -40,11 +40,11 @@ async def get_comments_for_file(
     user: auth.user_dependency,
     db: db_dependency
 ) -> List[CommentSerializer]:
-    file = db.query(models.File).filter(models.File.id == file_id).first()
+    file = db.query(models.File).filter(models.File.id == file_id).first()  # type: ignore
     if not file:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found")
 
-    comments = db.query(models.Comment).filter(models.Comment.file_id == file_id).all()
+    comments = db.query(models.Comment).filter(models.Comment.file_id == file_id).all()  # type: ignore
 
     if not comments:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No comments found for this file")

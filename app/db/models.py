@@ -1,40 +1,34 @@
 from datetime import datetime, timezone
-
-from sqlalchemy import (Column, DateTime, Enum, ForeignKey, Integer, String,
-                        Text)
-from sqlalchemy.orm import relationship
-
-from app.db.database import Base
+from sqlmodel import Field, Relationship, SQLModel
 from app.db.enums import FileStatus, FileType
 
 
-class User(Base):
-    __tablename__ = "users"
+class User(SQLModel, table=True):
+    __tablename__ = "users"  # Define table name
 
-    id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, index=True)
-    email = Column(String, unique=True, index=True)
-    password = Column(String)
+    id: int = Field(primary_key=True, index=True)
+    username: str = Field(index=True, nullable=True)
+    email: str = Field(unique=True, index=True)
+    password: str
 
-    files = relationship("File", back_populates="user")
-    comments = relationship("Comment", back_populates="user")
+    files: list["File"] = Relationship(back_populates="user")
+    comments: list["Comment"] = Relationship(back_populates="user")
 
 
-class File(Base):
+class File(SQLModel, table=True):
     __tablename__ = 'files'
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, index=True)
-    file_type = Column(Enum(FileType), nullable=False)
-    valid_invalid = Column(Enum(FileStatus), default=FileStatus.valid)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    size = Column(Integer, nullable=False)
-    csv_rows = Column(Integer, nullable=True)
-    upload_date = Column(DateTime, default=datetime.now(timezone.utc))
+    id: int = Field(primary_key=True, index=True)
+    title: str = Field(index=True)
+    file_type: FileType
+    valid_invalid: FileStatus = FileStatus.valid
+    user_id: int = Field(foreign_key="users.id")
+    size: int
+    csv_rows: int = 0
+    upload_date: datetime = Field(default=datetime.now(timezone.utc))
 
-    user = relationship("User", back_populates="files")
-
-    comments = relationship("Comment", back_populates="file")
+    user: "User" = Relationship(back_populates="files")
+    comments: list["Comment"] = Relationship(back_populates="file")
 
     def __repr__(self):
         return (f"<File(id={self.id}, title={self.title}, file_type={self.file_type}, "
@@ -42,17 +36,16 @@ class File(Base):
                 f"csv_rows={self.csv_rows}, upload_date={self.upload_date}, user_id={self.user_id})>")
 
 
-class Comment(Base):
+class Comment(SQLModel, table=True):
     __tablename__ = 'comments'
 
-    id = Column(Integer, primary_key=True, index=True)
-    text = Column(Text, nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    file_id = Column(Integer, ForeignKey("files.id"))
+    id: int = Field(primary_key=True, index=True)
+    text: str
+    user_id: int = Field(foreign_key="users.id")
+    file_id: int = Field(foreign_key="files.id")
 
-    user = relationship("User", back_populates="comments")
-
-    file = relationship("File", back_populates="comments")
+    user: "User" = Relationship(back_populates="comments")
+    file: "File" = Relationship(back_populates="comments")
 
     def __repr__(self):
         return f"<Comment(id={self.id}, text={self.text}, user_id={self.user_id}, file_id={self.file_id})>"

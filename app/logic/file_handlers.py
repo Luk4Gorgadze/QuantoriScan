@@ -36,14 +36,14 @@ def handle_csv(file_contents: bytes, db: Session, file_name: str, file_size: int
 
 
 def get_headers(csv_reader) -> list:
-    return next(csv_reader, None)
+    return next(csv_reader, [])
 
 
 def get_company_name_index(headers: list) -> int:
     try:
         return headers.index("Company Name")
     except ValueError:
-        return None
+        return 0
 
 
 def process_csv_rows(csv_reader, company_name_index: int, target_word: str) -> Tuple[bool, int]:
@@ -84,7 +84,7 @@ def handle_text(file_contents: bytes, db: Session, file_name: str, file_size: in
         contains_quantori = "Quantori" in text_content
 
         if contains_quantori:
-            save_file_to_db(db, file_name, file_size, user_id, None, FileType.text)
+            save_file_to_db(db, file_name, file_size, user_id, 0, FileType.text)
             return True
         else:
             return False
