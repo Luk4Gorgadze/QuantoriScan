@@ -97,7 +97,7 @@ jobs:
 
       - name: Run tests inside Docker container
         run: |
-          docker-compose exec -T web pytest tests
+          docker-compose exec -T web pytest app/tests
 
       - name: Stop and remove Docker Compose services
         if: always()
