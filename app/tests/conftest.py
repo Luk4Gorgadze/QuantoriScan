@@ -1,8 +1,9 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import StaticPool, create_engine
+from sqlalchemy import StaticPool
 from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel, create_engine
 
 import app.auth as auth
 from app.auth import bcrypt_context
@@ -54,9 +55,9 @@ def db_session():
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_and_teardown():
-    Base.metadata.create_all(bind=engine)
+    SQLModel.metadata.create_all(bind=engine)
     yield
-    Base.metadata.drop_all(bind=engine)
+    SQLModel.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture

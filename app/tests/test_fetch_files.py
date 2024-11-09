@@ -19,6 +19,6 @@ def test_fetch_files(authenticated_client, db_session):
 
     assert response.status_code == 200
 
-    assert response.json() == [{'id': 1, 'title': 'test_file', 'file_type': 'csv', 'size': 100, 'valid_invalid': 'valid', 'upload_date': '2021-01-01T00:00:00', 'csv_rows': None}]  # noqa
+    assert response.json() == [{'id': 1, 'title': 'test_file', 'file_type': 'csv', 'size': 100, 'valid_invalid': 'valid', 'upload_date': '2021-01-01T00:00:00', 'csv_rows': 0}]  # noqa
 
     assert db_session.query(File).count() == 1

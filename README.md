@@ -8,6 +8,9 @@ helper commands for me:
 [testing]
 - pytest .
 
+[mypy]
+- mypy --config-file mypy.ini app
+
 [formatting]
 - isort .
 - autopep8 --recursive --in-place .
