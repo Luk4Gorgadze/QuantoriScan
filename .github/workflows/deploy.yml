@@ -30,7 +30,7 @@ jobs:
           USER: ${{ secrets.USER }}
         run: |
           ssh $USER@$HOST << EOF
-            cd ~/quanotori_scan/QuantoriScan
+            cd ~/quantori_scan/QuantoriScan
             git pull
             sudo docker compose build
             sudo docker compose up -d --remove-orphans
