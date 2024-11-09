@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 import app.auth as auth
 from app.auth import bcrypt_context
-from app.db.database import get_db
+from app.db.database import Base, get_db
 from app.db.models import User
 from app.main import app
 
@@ -54,9 +54,9 @@ def db_session():
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_and_teardown():
-    # Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
     yield
-    # Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture
