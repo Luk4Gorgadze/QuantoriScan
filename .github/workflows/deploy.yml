@@ -30,9 +30,8 @@ jobs:
           USER: ${{ secrets.USER }}
         run: |
           ssh $USER@$HOST << EOF
-            cd ~/quanotori_scan
-            git pull
             cd ~/quanotori_scan/QuantoriScan
+            git pull
             sudo docker compose build
             sudo docker compose up -d --remove-orphans
             sudo docker builder prune -f
